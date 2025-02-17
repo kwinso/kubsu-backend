@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS submissions (
   `email` varchar(500) not null,
   `birth_date` date not null,
   `bio` text not null,
-  `sex` TINYINT(1)
+  `sex` TINYINT(1),
   `created_at` timestamp not null default current_timestamp
 );
 
