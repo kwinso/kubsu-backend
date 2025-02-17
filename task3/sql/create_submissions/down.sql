@@ -1,2 +1,3 @@
-DROP TABLE IF EXISTS public.submissions;
-DROP SCHEMA IF EXISTS public;
+DROP TABLE IF EXISTS submission_languages;
+DROP TABLE IF EXISTS submissions;
+DROP TABLE IF EXISTS languages;
