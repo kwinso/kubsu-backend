@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS languages (
 
 CREATE TABLE IF NOT EXISTS submission_languages (
   `id` int PRIMARY KEY,
-  `submission_id` foreign key references submissions(id),
-  `language_id`  foreign key references languages(id)
+  foreign key (id) references submissions(id),
+  foreign key (id) references languages(id)
 );
 
 CREATE TABLE IF NOT EXISTS submissions (
