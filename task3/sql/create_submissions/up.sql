@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS languages (
 );
 
 CREATE TABLE IF NOT EXISTS submissions (
-  `id` varchar(500) PRIMARY KEY,
+  `id` int PRIMARY KEY,
   `name` varchar(500) not null,
   `phone` varchar(500) not null,
   `email` varchar(500) not null,
@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS submissions (
 );
 
 CREATE TABLE IF NOT EXISTS submission_languages (
-  `id` int PRIMARY KEY,
+  `submission_id` int,
+  `language_id` int,
+  PRIMARY KEY (submission_id, language_id),
   foreign key (id) references submissions(id),
   foreign key (id) references languages(id)
 );
