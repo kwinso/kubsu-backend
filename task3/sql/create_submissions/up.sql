@@ -1,9 +1,9 @@
-CREATE IF NOT EXISTS languages (
+CREATE TABLE IF NOT EXISTS languages (
   `id` int PRIMARY KEY,
   `name` varchar(20) not null
 );
 
-CREATE IF NOT EXISTS submission_languages (
+CREATE TABLE IF NOT EXISTS submission_languages (
   `id` int PRIMARY KEY,
   `submission_id` foreign key references submissions(id),
   `language_id`  foreign key references languages(id)
