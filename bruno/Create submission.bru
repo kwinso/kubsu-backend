@@ -1,0 +1,22 @@
+meta {
+  name: Create submission
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/task3/index.php
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  name: Bob Dylan Jr
+  phone: 1234567890
+  email: bob@dylan.com
+  birth_date: 12.01.2025
+  bio: I like guitars
+  sex: 0
+  languages[]: 1
+  languages[]: 2
+}

@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS languages (
-  `id` int PRIMARY KEY,
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(20) not null
 );
 
 CREATE TABLE IF NOT EXISTS submissions (
-  `id` int PRIMARY KEY,
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(500) not null,
   `phone` varchar(500) not null,
   `email` varchar(500) not null,
   `birth_date` date not null,
   `bio` text not null,
-  `sex` TINYINT(1),
+  `sex` TINYINT(1) not null,
   `created_at` timestamp not null default current_timestamp
 );
 
