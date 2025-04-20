@@ -12,8 +12,14 @@ $db = new PDO(
 );
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+  // After page refresh, reset errors from the cookies
+  clearCookie('errors');
+
   if (!empty($_GET['clear'])) {
     clearCookie('submission_id');
+    $_COOKIE['submission_id'] = null;
+    header("Location: /task4");
+    exit();
   }
 
   $submissionId = $_COOKIE['submission_id'] ?? null;
@@ -21,9 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
   if ($submissionId) {
     $values = populatePreviousSubmission($db, $submissionId);
   }
-
-  // After page refresh, reset errors from the cookies
-  clearCookie('errors');
 
   // And update values with appropriate values
   setcookie('values', json_encode($values), time() + 3600);
@@ -43,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 function clearCookie($name)
 {
   setcookie($name, '', 1);
-  unset($_COOKIE[$name]);
 }
 
 function populatePreviousSubmission($db, $submissionId)
@@ -87,6 +89,9 @@ function validateArray($validators)
 {
   return function ($value) use ($validators) {
     $errors = [];
+    if (empty($value)) {
+      return null;
+    }
     foreach ($validators as $validator) {
       foreach ($value as $key => $val) {
         $error = $validator($val);
@@ -160,9 +165,10 @@ foreach ($data as $key => $val) {
 
 if ($errors) {
   setcookie('errors', json_encode($errors), time() + 3600);
+  $_COOKIE['errors'] = json_encode($errors);
   setcookie('values', json_encode($data), time() + 3600);
-  // Redirect back
-  header('Location: ');
+  $_COOKIE['values'] = json_encode($data);
+  include('form.php');
   exit();
 }
 
@@ -212,6 +218,7 @@ foreach ($languages as $lang) {
 }
 
 
+clearCookie('submission_id');
 # Save submission id to the cookie for reuse
 setcookie('submission_id', $submissionId, time() + 3600 * 24 * 365);
 
