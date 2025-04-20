@@ -14,6 +14,7 @@ $db = new PDO(
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
   // After page refresh, reset errors from the cookies
   clearCookie('errors');
+  $_COOKIE['errors'] = null; // in order to prevent showing errors on refresh
 
   if (!empty($_GET['clear'])) {
     clearCookie('submission_id');
