@@ -33,12 +33,12 @@ function errorLabel($key, $errors)
   if (!isset($errors[$key])) {
     return;
   }
-  print('<small class="error">' . $errors[$key] . '</small>');
+  print('<small class="error">' . htmlspecialchars($errors[$key], ENT_QUOTES, 'UTF-8') . '</small>');
 }
 
 function getValue($key, $values)
 {
-  print($values[$key] ?? '');
+  print(htmlspecialchars($values[$key] ?? '', ENT_QUOTES, 'UTF-8'));
 }
 ?>
 
@@ -47,9 +47,9 @@ function getValue($key, $values)
   <!-- Show login and password if present in cookies -->
   <?php
   $username = $_COOKIE['username'] ?? null;
-  $password = $_COOKIE['password'] ?? null;
+  $password = htmlspecialchars($_COOKIE['password'] ?? '', ENT_QUOTES, 'UTF-8');
   if ($_COOKIE[session_name()] ?? null) {
-    $name = $_SESSION['name'];
+    $name = htmlspecialchars($_SESSION['name'], ENT_QUOTES, 'UTF-8');
     print("Рады видеть вас снова, $name");
   } else if ($username && $password) {
     print("<p>Вы можете войти с логином <strong>$username</strong> и паролем <strong>$password</strong> для изменения данных на <a href=\"/task5/login.php\">странице входа</a>.</p>");
@@ -121,6 +121,8 @@ function getValue($key, $values)
           Женский
         </label>
       </fieldset>
+
+      <input hidden name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>" />
 
       <input type="submit" value="ok" hidden />
       <button type="submit"> Отправить </button>

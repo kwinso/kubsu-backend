@@ -4,6 +4,10 @@ if ($_COOKIE[session_name()] ?? null) {
   session_start();
 }
 
+if (empty($_SESSION['csrf_token'])) {
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 include("db.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -46,16 +50,21 @@ function clearCookie($name)
 
 function populatePreviousSubmission($db, $submissionId)
 {
-  $submission = fetchSubmission($db, $submissionId);
-  return [
-    'name' => $submission['name'],
-    'phone' => $submission['phone'],
-    'email' => $submission['email'],
-    'birth_date' => $submission['birth_date'],
-    'bio' => $submission['bio'],
-    'sex' => $submission['sex'],
-    'languages' => $submission['languages']
-  ];
+  try {
+    $submission = fetchSubmission($db, $submissionId);
+    return [
+      'name' => $submission['name'],
+      'phone' => $submission['phone'],
+      'email' => $submission['email'],
+      'birth_date' => $submission['birth_date'],
+      'bio' => $submission['bio'],
+      'sex' => $submission['sex'],
+      'languages' => $submission['languages']
+    ];
+  } catch (PDOException $e) {
+    error_log('Error : ' . $e->getMessage());
+    die("Error fetching previous submission.");
+  }
 }
 
 
@@ -136,6 +145,10 @@ $validations = [
       exists($db, 'languages', 'id', 'Язык не существует.'),
     ]),
   ],
+  'csrf_token' => [
+    notEmpty('CSRF токен не может быть пустым.'),
+    fn($val) => $val == $_SESSION['csrf_token'] ? null : 'Ошибка CSRF токена.',
+  ],
 ];
 
 $data = [
@@ -145,7 +158,8 @@ $data = [
   'birth_date' => $_POST['birth_date'] ?? null,
   'bio' => $_POST['bio'] ?? null,
   'sex' => $_POST['sex'] ?? null,
-  'languages' => $_POST['languages'] ?? null
+  'languages' => $_POST['languages'] ?? null,
+  'csrf_token' => $_SESSION['csrf_token']
 ];
 
 $errors = [];
@@ -197,8 +211,8 @@ function insert($db, $table, $data)
   try {
     $stmt->execute($data);
   } catch (PDOException $e) {
-    print('Error : ' . $e->getMessage());
-    exit();
+    error_log('Error : ' . $e->getMessage());
+    die("Error inserting submission.");
   }
   return $db->lastInsertId();
 }
@@ -214,8 +228,8 @@ function update($db, $table, $data)
   try {
     $stmt->execute($data);
   } catch (PDOException $e) {
-    print('Error : ' . $e->getMessage());
-    exit();
+    error_log('Error : ' . $e->getMessage());
+    die("Error updating submission.");
   }
 }
 
@@ -228,6 +242,7 @@ function deleteSubmissionLanguages($db, $submissionId)
 $languages = $data['languages'];
 
 unset($data['languages']);
+unset($data['csrf_token']);
 
 if ($_SESSION['username'] ?? null) {
   $submissionId = $_SESSION['submission_id'];
